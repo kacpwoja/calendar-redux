@@ -25,7 +25,7 @@ export class Day extends Component {
     }
 
     async getData(date) {
-        const response = await fetch(`api/GetEvents?year=${date.getFullYear()}&month=${date.getMonth() + 1}&day=${date.getDate()}`);
+        const response = await fetch(`api/Events?year=${date.getFullYear()}&month=${date.getMonth() + 1}&day=${date.getDate()}`);
         const data = await response.json();
         return data;
     }
@@ -44,8 +44,8 @@ export class Day extends Component {
 
     deleteEvent(event) {
         let date = this.state.date;
-        fetch(`api/RemoveEvent?year=${date.getFullYear()}&month=${date.getMonth() + 1}&day=${date.getDate()}&id=${event.id}`, {
-            method: 'POST'
+        fetch(`api/Event?year=${date.getFullYear()}&month=${date.getMonth() + 1}&day=${date.getDate()}&id=${event.id}`, {
+            method: 'DELETE'
         }).then(() => {
             this.getData(this.state.date).then(o => {
                 let state = {

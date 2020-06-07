@@ -1,5 +1,5 @@
 {
-  "name": "egui_calendar_react",
+  "name": "calendar-redux",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

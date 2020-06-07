@@ -11,14 +11,14 @@ export class Info extends Component {
             <div>
                 <div className="row headerbar text-chonker">
                     <div className="col">
-                        {"Calendar in React with .NET Core"}
+                        {"Simple Calendar App"}
                     </div>
                 </div>
                 <br />
                 <div className="row">
                     <div className="col">
-                        {"This is a Calendar program for the Graphical User Interfaces (EGUI) course 2020L, Project no. 3."}<br />
-                        {"Made by Kacper Wojakowski, 293064 in React with a .NET Core backend."}
+                        {"lorem ipsum"}<br />
+                        {"Made by Kacper Wojakowski, github.com/kacpwoja"}
                     </div>
                 </div>
             </div>
