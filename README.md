@@ -11,7 +11,7 @@ API:
 GET api/busydays?year={year}&month={month}
 Response: Array of Event
 
-GET api/Events?year={year}&month={month}&day={day}}
+GET api/Events?year={year}&month={month}&day={day}
 Response: Array of Event
 
 POST api/Event?year={year}&month={month}&day={day}

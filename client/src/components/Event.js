@@ -38,7 +38,7 @@ export class Event extends Component {
         let time = this.timeRef.current.value;
         let name = this.nameRef.current.value;
 
-        fetch(`api/Event?year=${date.getFullYear()}&month=${date.getMonth() + 1}&day=${date.getDate()}`, {
+        fetch(`http://server:4000/api/Event?year=${date.getFullYear()}&month=${date.getMonth() + 1}&day=${date.getDate()}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ export class Event extends Component {
         let name = this.nameRef.current.value;
         let id = this.state.event.id
 
-        fetch(`api/Event?year=${date.getFullYear()}&month=${date.getMonth() + 1}&day=${date.getDate()}`, {
+        fetch(`http://server:4000/api/Event?year=${date.getFullYear()}&month=${date.getMonth() + 1}&day=${date.getDate()}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
