@@ -8,7 +8,7 @@ Event:
     Name: string
 
 API:
-GET api/busydays?year={year}&month={month}
+GET api/BusyDays?year={year}&month={month}
 Response: Array of Event
 
 GET api/Events?year={year}&month={month}&day={day}

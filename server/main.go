@@ -4,18 +4,20 @@ import (
     "fmt"
     "net/http"
     "log"
-    "github.com/gorilla/mux"
+
+    "github.com/kacpwoja/calendar-redux/server/router"
+    "github.com/kacpwoja/calendar-redux/server/eventbase"
 )
 
-func hellofunc(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, "Hello\n")
-}
-
 func main() {
-    fmt.Println("Starting on port 4000")
-    router := mux.NewRouter()
+    db, err := eventbase.Init()
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer db.Close()
 
-    router.HandleFunc("/api/", hellofunc).Methods("GET", "OPTIONS")
+    fmt.Println("Starting on port 4000")
+    router := router.Router()
 
     log.Fatal(http.ListenAndServe(":4000", router))
 }
