@@ -9,7 +9,7 @@ Event:
 
 API:
 GET api/BusyDays?year={year}&month={month}
-Response: Array of Event
+Response: Array of ints
 
 GET api/Events?year={year}&month={month}&day={day}
 Response: Array of Event

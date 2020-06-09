@@ -25,7 +25,7 @@ export class Calendar extends Component {
 
     async getData(date) {
         console.a = date;
-        const response = await fetch(`http://server:4000/api/BusyDays?year=${date.getFullYear()}&month=${date.getMonth() + 1}`);
+        const response = await fetch(`http://localhost:4000/api/BusyDays?year=${date.getFullYear()}&month=${date.getMonth() + 1}`);
         const data = await response.json();
         return data;
     }

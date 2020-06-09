@@ -1,5 +1,6 @@
 {
   "name": "calendar-redux",
+  "proxy": "http://localhost:4000",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

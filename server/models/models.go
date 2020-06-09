@@ -1,7 +1,7 @@
 package models
 
 type Event struct {
-	ID		string		`json:"ID"`
-	Time	string		`json:"Time"`
-	Name	string		`json:"Name"`
+	ID		string		`json:"id"`
+	Time	string		`json:"time"`
+	Name	string		`json:"name"`
 }

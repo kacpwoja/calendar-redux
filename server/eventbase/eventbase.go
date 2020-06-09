@@ -5,7 +5,9 @@ import (
 	"database/sql"
 	_ "github.com/lib/pq"
 	"time"
-    "github.com/kacpwoja/calendar-redux/server/models"
+	"github.com/kacpwoja/calendar-redux/server/models"
+	
+	"log"
 )
 
 const (
@@ -22,7 +24,8 @@ func Init() (*sql.DB, error) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
+	var err error
+	db, err = sql.Open("postgres", psqlInfo)
 	if err != nil {
 		return nil, err
 	}
@@ -30,17 +33,24 @@ func Init() (*sql.DB, error) {
     if err != nil {
         return nil, err
 	}
+	log.Print("Connected to database")
 	return db, nil
 }
 
 func InsertEvent(id string, date string, time_at string, name string) error {
-	ev_date, _ := time.Parse("2020-06-10", date)
-	ev_time, _ := time.Parse("16:20", time_at)
+	ev_date, err := time.Parse("2006-01-02", date)
+	if err != nil {
+		return err
+	}
+	ev_time, err := time.Parse("15:04:05", time_at)
+	if err != nil {
+		return err
+	}
 
 	sqlStatement := `
 	INSERT INTO events (ev_id, ev_date, ev_time, ev_name)
 	VALUES ($1, $2, $3, $4);`
-	_, err := db.Exec(sqlStatement, id, ev_date, ev_time, name)
+	_, err = db.Exec(sqlStatement, id, ev_date, ev_time, name)
 	if err != nil {
 		return err
 	}
@@ -48,13 +58,16 @@ func InsertEvent(id string, date string, time_at string, name string) error {
 }
 
 func UpdateEvent(id string, time_at string, name string) error {
-	ev_time, _ := time.Parse("16:20", time_at)
+	ev_time, err := time.Parse("15:04:05", time_at)
+	if err != nil {
+		return err
+	}
 
 	sqlStatement := `
 	UPDATE events
 	SET ev_time = $2, ev_name = $3
 	WHERE ev_id = $1;`
-	_, err := db.Exec(sqlStatement, id, ev_time, name)
+	_, err = db.Exec(sqlStatement, id, ev_time, name)
 	if err != nil {
 		return err
 	}
@@ -73,9 +86,12 @@ func DeleteEvent(id string) error {
 }
 
 func GetEventsDay(date string) ([]models.Event, error) {
-	events := make([]models.Event, 0)
+	var events []models.Event
 
-	ev_date, _ := time.Parse("2020-06-10", date)
+	ev_date, err := time.Parse("2006-01-02", date)
+	if err != nil {
+		return events, nil
+	}
 	rows, err := db.Query("SELECT ev_id, ev_date, ev_time, ev_name FROM events")
 	if err != nil {
 		return events, err
@@ -84,14 +100,17 @@ func GetEventsDay(date string) ([]models.Event, error) {
 	for rows.Next() {
 		var id, name string
 		var time_at, date_at time.Time
-		err = rows.Scan()
+		err = rows.Scan(&id, &date_at, &time_at, &name)
 		if err != nil {
 			return events, err
 		}
-		if date_at == ev_date {
+
+		y1, m1, d1 := date_at.Date()
+		y2, m2, d2 :=ev_date.Date()
+		if y1 == y2 && m1 == m2 && d1 == d2 {
 			ev := models.Event{
 				ID: id,
-				Time: time_at.Format("16:20"),
+				Time: time_at.Format("15:04:05"),
 				Name: name,
 			}
 			events = append(events, ev)
@@ -104,33 +123,30 @@ func GetEventsDay(date string) ([]models.Event, error) {
 	return events, nil
 }
 
-func GetEventsMonth(year int, month int) ([]models.Event, error) {
-	events := make([]models.Event, 0)
+func GetEventsMonth(year int, month int) ([]int, error) {
+	var busy_days []int
 
 	rows, err := db.Query("SELECT ev_id, ev_date, ev_time, ev_name FROM events")
 	if err != nil {
-		return events, err
+		return busy_days, err
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var id, name string
 		var time_at, date_at time.Time
-		err = rows.Scan()
+		err = rows.Scan(&id, &date_at, &time_at, &name)
 		if err != nil {
-			return events, err
+			return busy_days, err
 		}
 		if date_at.Year() == year && date_at.Month() == time.Month(month) {
-			ev := models.Event{
-				ID: id,
-				Time: time_at.Format("16:20"),
-				Name: name,
-			}
-			events = append(events, ev)
+			day := date_at.Day()
+			busy_days = append(busy_days, day)
 		}
 	}
 	err = rows.Err()
 	if err != nil {
-		return events, err
+		return busy_days, err
 	}
-	return events, nil
+
+	return busy_days, nil
 }
