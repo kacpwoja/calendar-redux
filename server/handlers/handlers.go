@@ -14,8 +14,6 @@ import (
 )
 
 func GetBusyDays(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
 	log.Print("busy")
 	vals := r.URL.Query()
 
@@ -48,7 +46,6 @@ func GetBusyDays(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetEvents(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	log.Print("events")
 	vals := r.URL.Query()
 
@@ -82,9 +79,6 @@ func GetEvents(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateEvent(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	log.Print("POST")
 	vals := r.URL.Query()
 
@@ -135,7 +129,6 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 }
 
 func EditEvent(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	log.Print("PUT")
 	vals := r.URL.Query()
 
@@ -172,7 +165,6 @@ func EditEvent(w http.ResponseWriter, r *http.Request) {
 }
 
 func RemoveEvent(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	log.Print("DELETE")
 	vals := r.URL.Query()
 

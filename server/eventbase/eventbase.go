@@ -86,7 +86,7 @@ func DeleteEvent(id string) error {
 }
 
 func GetEventsDay(date string) ([]models.Event, error) {
-	var events []models.Event
+	events := make([]models.Event, 0)
 
 	ev_date, err := time.Parse("2006-01-02", date)
 	if err != nil {
@@ -106,7 +106,8 @@ func GetEventsDay(date string) ([]models.Event, error) {
 		}
 
 		y1, m1, d1 := date_at.Date()
-		y2, m2, d2 :=ev_date.Date()
+		y2, m2, d2 := ev_date.Date()
+
 		if y1 == y2 && m1 == m2 && d1 == d2 {
 			ev := models.Event{
 				ID: id,
@@ -124,7 +125,7 @@ func GetEventsDay(date string) ([]models.Event, error) {
 }
 
 func GetEventsMonth(year int, month int) ([]int, error) {
-	var busy_days []int
+	busy_days := make([]int, 0)
 
 	rows, err := db.Query("SELECT ev_id, ev_date, ev_time, ev_name FROM events")
 	if err != nil {
