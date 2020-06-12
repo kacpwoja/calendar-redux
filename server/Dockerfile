@@ -1,3 +1,4 @@
+# STAGE 1 - BUILD
 FROM golang:1.14-alpine AS build
 
 ENV GO114MODULE=on \
@@ -19,6 +20,7 @@ WORKDIR /dist
 
 RUN cp /build/main .
 
+# STAGE 2 - DEPLOY
 FROM scratch
 
 COPY --from=build /dist/main /

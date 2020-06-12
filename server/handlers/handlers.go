@@ -14,10 +14,8 @@ import (
 )
 
 func GetBusyDays(w http.ResponseWriter, r *http.Request) {
-	log.Print("busy")
+	// Handle Query
 	vals := r.URL.Query()
-
-	log.Print(vals)
 
 	year_s := vals.Get("year")
 	month_s := vals.Get("month")
@@ -33,20 +31,21 @@ func GetBusyDays(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Fetch from db
 	busy_days, err := eventbase.GetEventsMonth(year, month)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	log.Print(busy_days)
+	// Return response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(busy_days)
 }
 
 func GetEvents(w http.ResponseWriter, r *http.Request) {
-	log.Print("events")
+	//Handle Query
 	vals := r.URL.Query()
 
 	year_s := vals.Get("year")
@@ -67,19 +66,21 @@ func GetEvents(w http.ResponseWriter, r *http.Request) {
 
 	date := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC).Format("2006-01-02")
 
+	// Fetch from db
 	events, err := eventbase.GetEventsDay(date)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
+	// Return Response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(events)
 }
 
 func CreateEvent(w http.ResponseWriter, r *http.Request) {
-	log.Print("POST")
+	// Handle Query
 	vals := r.URL.Query()
 
 	year_s := vals.Get("year")
@@ -87,7 +88,6 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 	day_s := vals.Get("day")
 	if year_s == "" || month_s == "" || day_s == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		log.Print("POST BR1")
 		return
 	}
 
@@ -96,40 +96,36 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 	day, err_d := strconv.Atoi(day_s)
 	if err_y != nil || err_m != nil || err_d != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		log.Print("POST BR2")
 		return
 	}
 
 	date := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC).Format("2006-01-02")
 
-	log.Printf("%d %d %d", year, month, day)
-	log.Print("Date" + date)
-
-	log.Print(r.Body)
+	// Handle JSON Request
 	var event models.Event
 	err := json.NewDecoder(r.Body).Decode(&event)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		log.Print("POST BR3")
-		log.Print(err)
 		return
 	}
 
+	// Generate new GUID
 	event.ID = guid.New().String()
 
+	// Insert to db
 	err = eventbase.InsertEvent(event.ID, date, event.Time, event.Name)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Print("POST ISE")
 		log.Print(err)
 		return
 	}
 
+	// Return Response
 	w.WriteHeader(http.StatusOK)
 }
 
 func EditEvent(w http.ResponseWriter, r *http.Request) {
-	log.Print("PUT")
+	// Handle Query
 	vals := r.URL.Query()
 
 	year_s := vals.Get("year")
@@ -140,6 +136,7 @@ func EditEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Query params unused, API was badly designed
 	_, err_y := strconv.Atoi(year_s)
 	_, err_m := strconv.Atoi(month_s)
 	_, err_d := strconv.Atoi(day_s)
@@ -148,6 +145,7 @@ func EditEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Handle JSON Request
 	var event models.Event
 	err := json.NewDecoder(r.Body).Decode(&event)
 	if err != nil {
@@ -155,17 +153,19 @@ func EditEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Update in db
 	err = eventbase.UpdateEvent(event.ID, event.Time, event.Name)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
+	// Return Response
 	w.WriteHeader(http.StatusOK)
 }
 
 func RemoveEvent(w http.ResponseWriter, r *http.Request) {
-	log.Print("DELETE")
+	// Handle Query
 	vals := r.URL.Query()
 
 	year_s := vals.Get("year")
@@ -177,20 +177,22 @@ func RemoveEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Query params unused, API was badly designed
 	_, err_y := strconv.Atoi(year_s)
 	_, err_m := strconv.Atoi(month_s)
 	_, err_d := strconv.Atoi(day_s)
-
 	if err_y != nil || err_m != nil || err_d != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
+	// Delete from db
 	err := eventbase.DeleteEvent(id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
+	// Return Response
 	w.WriteHeader(http.StatusOK)
 }
