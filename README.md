@@ -1,6 +1,8 @@
 # calendar-redux
 trying out go
 
+TODO: db password as a secret, write actual README
+
 Models:
 Event:
     ID: string
